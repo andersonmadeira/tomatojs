@@ -1,9 +1,9 @@
 // Navigation info obj
-var State = function(label) {
+var State = function(labelText) {
 	this.strokeWidth = 5;
 	this.fillColor = "#21acd7";
 	this.strokeColor = "#1d7996";
-	this.label = label;
+	this.label = new Label(labelText);
 	this.radius = 50;
 };
 
@@ -11,6 +11,7 @@ var Label = function (text) {
 	this.text = text;
 	this.fontFamily = 'Arial';
 	this.fill = '#000000';
+	this.fontSize = 35;
 };
 
 $(document).ready(function() {
@@ -22,11 +23,11 @@ $(document).ready(function() {
 	circle.attr("stroke-width", q0.strokeWidth);
 	circle.attr("fill", q0.fillColor);
 	circle.attr("stroke", q0.strokeColor);
-	paper.text(circle.attr("cx"), circle.attr("cy"), q0.label);
+	paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
 	// setup natigation
 	var menu1 = gui.addFolder('State');
 	// when label changed, draw circle and new label
-	menu1.add(q0, 'label', 0, 10).onChange(function (value) {
+	menu1.add(q0.label, 'text', 0, 10).onChange(function (value) {
 		paper.clear();
 		circle = paper.circle(100, 100, q0.radius);
 		circle.attr("stroke-width", q0.strokeWidth);
@@ -48,5 +49,19 @@ $(document).ready(function() {
 	});
 	// open the folder
 	menu1.open();
+
+	var menu2 = gui.addFolder('Font');
+
+	menu2.add(q0.label, 'fontSize', 5, 50).step(1).onChange(function (value) {
+		paper.clear();
+		circle = paper.circle(100, 100, q0.radius);
+		circle.attr("stroke-width", q0.strokeWidth);
+		circle.attr("fill", q0.fillColor);
+		circle.attr("stroke", q0.strokeColor);
+		circle.attr("stroke-width", q0.strokeWidth);
+		paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
+	});
+
+	menu2.open();
 });
 
