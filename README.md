@@ -1,4 +1,4 @@
 tomatojs
 ========
 
-Um editor web para estudo e desenho de automatos.
+A graphic easy to use tool for drawing and analysis of finite automata and lexical analysis, that may be used in computer science classes.
