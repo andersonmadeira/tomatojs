@@ -1,4 +1,6 @@
-// Navigation info obj
+/**  State class
+	@param: labelText: string text to be used as label.
+*/
 var State = function(labelText) {
 	this.strokeWidth = 5;
 	this.fillColor = "#21acd7";
@@ -6,11 +8,13 @@ var State = function(labelText) {
 	this.label = new Label(labelText);
 	this.radius = 50;
 };
-
+/**  Label class
+	@param: labelText: string text to be used as label.
+*/
 var Label = function (text) {
 	this.text = text;
 	this.fontFamily = 'Arial';
-	this.fill = '#000000';
+	this.fillColor = '#000000';
 	this.fontSize = 35;
 };
 
@@ -23,7 +27,7 @@ $(document).ready(function() {
 	circle.attr("stroke-width", q0.strokeWidth);
 	circle.attr("fill", q0.fillColor);
 	circle.attr("stroke", q0.strokeColor);
-	paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
+	var t2 = paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
 	// setup natigation
 	var menu1 = gui.addFolder('State');
 	// when label changed, draw circle and new label
