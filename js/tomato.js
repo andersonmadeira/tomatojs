@@ -37,7 +37,11 @@ Raphael.st.draggable = function() {
           ly = dy + oy;
           me.transform('t' + lx + ',' + ly);
       },
-      startFun = function() {},
+      // note: also a single left mouse click
+      startFun = function() {
+      	// start dragging brings the set to front
+      	me.toFront();
+      },
       endFun = function() {
           ox = lx;
           oy = ly;
