@@ -1,79 +1,97 @@
-/**
- * RaphaelJS
+/*
+ * The global canvas used to draw svg
  */
- var paper = null;
+var paper = null;
+
+/**
+ * App config
+ */
+var App = {
+	Mode: {
+		State: 0,
+		Transition: 0 
+	},
+	DefaultValues: {
+		xPos: 100,
+		yPos: 100,
+		radius: 25,
+		strokeWidth: 5,
+		fillColor: "#21acd7",
+		strokeColor: "#1d7996",
+		fontFamily: "Arial",
+		fontSize: 25,
+	}
+}
 
 /**  
-* Stabe Builder class: responsible for building state objects
+* State Factory: responsible for building state objects
 */
-/*
-var State = {*/
+var State = {
 	/**
-	 * @param labelText: string
-	 * @param [x]: x position
-	 * @param [y]: y position
+	 * @param paper: RaphaelJS canvas object.
+	 * @param paramStrText: string
+	 * @param paramX: number
+	 * @param paramY: number
+	 * @param paramRadius: number
 	 */
-	/*build: function(paramLabelText, paramX, paramY, paramRadius) {
+	build: function(paper, paramStrText, paramX, paramY, paramRadius) {
 		var obj = new State.__stateClass();
 		// default values
-		var x       = (typeof paramX !== 'undefined')      ? paramX      : 100; // default value 100
-		var y       = (typeof paramY !== 'undefined')      ? paramY      : 100; // default value 100
-		var radius  = (typeof paramRadius !== 'undefined') ? paramRadius : 50; // default value 100
-		// default properties
+		var x       = (typeof paramX      !== 'undefined')  ? paramX      : App.DefaultValues.xPos;
+		var y       = (typeof paramY      !== 'undefined')  ? paramY      : App.DefaultValues.yPos;
+		var radius  = (typeof paramRadius !== 'undefined')  ? paramRadius : App.DefaultValues.radius;
+		// create the object
 		obj._pCircle = paper.circle(x, y, radius);
-		obj._pCircle.attr("stroke-width", 5);
-		obj._pCircle.attr("fill", "#21acd7");
-		obj._pCircle.attr("stroke", "#1d7996");
-		obj._label = Label.build(paramLabelText, obj._pCircle);
+		obj._pCircle.attr("stroke-width", App.DefaultValues.strokeWidth);
+		obj._pCircle.attr("fill", App.DefaultValues.fillColor);
+		obj._pCircle.attr("stroke", App.DefaultValues.strokeColor);
+		obj._label = Label.build(paramStrText, 
+			obj._pCircle.attr('cx'), obj._pCircle.attr('cy'));
 		// return the new object
 		return obj;
-	},*/
+	},
 	// "private" class representing the state.
-/*	__stateClass: function () {
-		// methods
-	}
-};*/
-/**  
-* Label Builder class: responsible for building label objects
-*/
-/*var Label = {*/
-	/**
-	 * @param labelText: string
-	 * @param [x]: x position
-	 * @param [y]: y position
-	 */
-	/*build: function(paramStrText, paramFontSize, paramX, paramY) {
-		var obj = new Label.__labelClass();
-		// default values
-		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : 20; // default value 100
-		// default properties
-		obj._pText = paper.text(paramX, paramY, paramStrText);
-		obj._pText.attr("font-size", q0.label.fontSize);
-		// return the new object
-		return obj;
-	},*/
-	/*__labelClass: function () {
-		// methods
+	__stateClass: function () {
+		// @todo: methods
 	}
 };
-*/
-/**  Label class
-	@param: labelText: string text to be used as label.
-*/
-/*
-@deprecated
-var Label = function (text) {
-	this.text = text;
-	this.fontFamily = 'Arial';
-	this.fillColor = '#000000';
-	this.fontSize = 35;
-};*/
+
+/**  
+ * Label Factory: responsible for building label objects
+ */
+var Label = {
+	/**
+	 * @param paramStrText: string
+	 * @param paramX: number
+	 * @param paramY: number
+	 * @param paramFontSize: number
+	 */
+	build: function(paramStrText, paramX, paramY, paramFontSize) {
+		var obj = new Label.__labelClass();
+		// default values
+		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : App.DefaultValues.fontSize;
+		// object contruction
+		obj._pText = paper.text(paramX, paramY, paramStrText);
+		obj._pText.attr("font-size", q0.label.fontSize);
+		obj._pText.attr('font-family', App.DefaultValues.fontFamily);
+		obj._pText.attr('fill', App.DefaultValues.strokeColor);	
+		obj._pText.attr('font-size', App.DefaultValues.fontSize);
+		// return the new object
+		return obj;
+	},
+	__labelClass: function () {
+		// @todo: methods
+	}
+};
+
+function insert_state () {
+	State.build(paper, "q0");
+}
 
 $(document).ready(function() {
 	// init main objs
-	var paper  = new Raphael('svg_canvas_container', 794, 394);
-	// var q0     = State.build("q0");
-	// setup natigation
+	paper = new Raphael('svg_canvas_container', 794, 394);
+	// resizes the div container and canvas
 	$('#svg_canvas_container').resizable({
 		resize: function( event, ui ) {
 			paper.setSize($('#svg_canvas_container').width(), $('#svg_canvas_container').height());
