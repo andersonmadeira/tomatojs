@@ -5,10 +5,15 @@ svg {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	cursor: crosshair;
 	border: 1px dashed gray;
 }
 
+#svg_canvas_container {
+	padding: 3px;
+	background: #FAFAFA;
+	width: 800px;
+	height: 400px;
+}
 #stage {
   border: 1px dashed gray;
 }

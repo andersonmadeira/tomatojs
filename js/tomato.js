@@ -1,71 +1,83 @@
-/**  State class
-	@param: labelText: string text to be used as label.
+/**
+ * RaphaelJS
+ */
+ var paper = null;
+
+/**  
+* Stabe Builder class: responsible for building state objects
 */
-var State = function(labelText) {
-	this.strokeWidth = 5;
-	this.fillColor = "#21acd7";
-	this.strokeColor = "#1d7996";
-	this.label = new Label(labelText);
-	this.radius = 50;
+/*
+var State = {*/
+	/**
+	 * @param labelText: string
+	 * @param [x]: x position
+	 * @param [y]: y position
+	 */
+	/*build: function(paramLabelText, paramX, paramY, paramRadius) {
+		var obj = new State.__stateClass();
+		// default values
+		var x       = (typeof paramX !== 'undefined')      ? paramX      : 100; // default value 100
+		var y       = (typeof paramY !== 'undefined')      ? paramY      : 100; // default value 100
+		var radius  = (typeof paramRadius !== 'undefined') ? paramRadius : 50; // default value 100
+		// default properties
+		obj._pCircle = paper.circle(x, y, radius);
+		obj._pCircle.attr("stroke-width", 5);
+		obj._pCircle.attr("fill", "#21acd7");
+		obj._pCircle.attr("stroke", "#1d7996");
+		obj._label = Label.build(paramLabelText, obj._pCircle);
+		// return the new object
+		return obj;
+	},*/
+	// "private" class representing the state.
+/*	__stateClass: function () {
+		// methods
+	}
+};*/
+/**  
+* Label Builder class: responsible for building label objects
+*/
+/*var Label = {*/
+	/**
+	 * @param labelText: string
+	 * @param [x]: x position
+	 * @param [y]: y position
+	 */
+	/*build: function(paramStrText, paramFontSize, paramX, paramY) {
+		var obj = new Label.__labelClass();
+		// default values
+		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : 20; // default value 100
+		// default properties
+		obj._pText = paper.text(paramX, paramY, paramStrText);
+		obj._pText.attr("font-size", q0.label.fontSize);
+		// return the new object
+		return obj;
+	},*/
+	/*__labelClass: function () {
+		// methods
+	}
 };
+*/
 /**  Label class
 	@param: labelText: string text to be used as label.
 */
+/*
+@deprecated
 var Label = function (text) {
 	this.text = text;
 	this.fontFamily = 'Arial';
 	this.fillColor = '#000000';
 	this.fontSize = 35;
-};
+};*/
 
 $(document).ready(function() {
 	// init main objs
-	var q0     = new State("q0");
-	var gui    = new dat.GUI();
-	var paper  = new Raphael(10, 10, 500, 500);
-	var circle = paper.circle(100, 100, q0.radius);
-	circle.attr("stroke-width", q0.strokeWidth);
-	circle.attr("fill", q0.fillColor);
-	circle.attr("stroke", q0.strokeColor);
-	var t2 = paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
+	var paper  = new Raphael('svg_canvas_container', 794, 394);
+	// var q0     = State.build("q0");
 	// setup natigation
-	var menu1 = gui.addFolder('State');
-	// when label changed, draw circle and new label
-	menu1.add(q0.label, 'text', 0, 10).onChange(function (value) {
-		paper.clear();
-		circle = paper.circle(100, 100, q0.radius);
-		circle.attr("stroke-width", q0.strokeWidth);
-		circle.attr("fill", q0.fillColor);
-		circle.attr("stroke", q0.strokeColor);
-		paper.text(circle.attr("cx"), circle.attr("cy"), value);
+	$('#svg_canvas_container').resizable({
+		resize: function( event, ui ) {
+			paper.setSize($('#svg_canvas_container').width(), $('#svg_canvas_container').height());
+		}
 	});
-	menu1.add(q0, 'strokeWidth', 0, 10).step(1).onChange(function (value) {
-		circle.attr("stroke-width", value);
-	});
-	menu1.add(q0, 'radius', 0, 100).step(1).onChange(function (value) {
-		circle.attr("r", value);
-	});
-	menu1.addColor(q0, 'fillColor').onChange(function (value) {
-		circle.attr("fill", value);
-	});
-	menu1.addColor(q0, 'strokeColor').onChange(function (value) {
-		circle.attr("stroke", value);
-	});
-	// open the folder
-	menu1.open();
-
-	var menu2 = gui.addFolder('Font');
-
-	menu2.add(q0.label, 'fontSize', 5, 50).step(1).onChange(function (value) {
-		paper.clear();
-		circle = paper.circle(100, 100, q0.radius);
-		circle.attr("stroke-width", q0.strokeWidth);
-		circle.attr("fill", q0.fillColor);
-		circle.attr("stroke", q0.strokeColor);
-		circle.attr("stroke-width", q0.strokeWidth);
-		paper.text(circle.attr("cx"), circle.attr("cy"), q0.label.text).attr("font-size", q0.label.fontSize);
-	});
-
-	menu2.open();
 });
 
