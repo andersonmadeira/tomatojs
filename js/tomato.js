@@ -11,16 +11,17 @@ var App = {
 		State: 0,
 		Transition: 0 
 	},
-	DefaultValues: {
+	Preferences: {
 		xPos: 100,
 		yPos: 100,
 		radius: 25,
-		strokeWidth: 5,
+		strokeWidth: 2,
 		fillColor: "#21acd7",
 		strokeColor: "#1d7996",
 		fontFamily: "Arial",
 		fontSize: 25,
-	}
+	},
+	StateCount: 0
 }
 
 /**
@@ -41,10 +42,13 @@ Raphael.st.draggable = function() {
       startFun = function() {
       	// start dragging brings the set to front
       	me.toFront();
+      	// change opacity
+      	me.animate({'fill-opacity': 0.5, 'stroke-opacity': 0.7}, 200);
       },
       endFun = function() {
           ox = lx;
           oy = ly;
+          me.animate({'fill-opacity': 1, 'stroke-opacity': 1}, 200);
       };
   
   this.drag(moveFun, startFun, endFun);
@@ -64,22 +68,22 @@ var State = {
 	build: function(paper, paramStrText, paramX, paramY, paramRadius) {
 		var obj = new State.__stateClass();
 		// default values
-		var x       = (typeof paramX      !== 'undefined')  ? paramX      : App.DefaultValues.xPos;
-		var y       = (typeof paramY      !== 'undefined')  ? paramY      : App.DefaultValues.yPos;
-		var radius  = (typeof paramRadius !== 'undefined')  ? paramRadius : App.DefaultValues.radius;
+		var x       = (typeof paramX      !== 'undefined')  ? paramX      : App.Preferences.xPos;
+		var y       = (typeof paramY      !== 'undefined')  ? paramY      : App.Preferences.yPos;
+		var radius  = (typeof paramRadius !== 'undefined')  ? paramRadius : App.Preferences.radius;
 		// starts set, ie Circle (State) + Text (Label)
 		paper.setStart();
 		// create the object
 		obj._pCircle = paper.circle(x, y, radius);
-		obj._pCircle.attr("stroke-width", App.DefaultValues.strokeWidth);
-		obj._pCircle.attr("fill", App.DefaultValues.fillColor);
-		obj._pCircle.attr("stroke", App.DefaultValues.strokeColor);
+		obj._pCircle.attr("stroke-width", App.Preferences.strokeWidth);
+		obj._pCircle.attr("fill", App.Preferences.fillColor);
+		obj._pCircle.attr("stroke", App.Preferences.strokeColor);
 		obj._label = Label.build(paramStrText, 
 			obj._pCircle.attr('cx'), obj._pCircle.attr('cy'));
 		// end set creation
 		obj._set = paper.setFinish();
 		// change cursor when hovering set
-		obj._set.attr({cursor: "move"});
+		obj._set.attr({opacity: 1, cursor: "move"});
 		// makes the set draggable
 		obj._set.draggable();
 		// return the new object
@@ -104,13 +108,13 @@ var Label = {
 	build: function(paramStrText, paramX, paramY, paramFontSize) {
 		var obj = new Label.__labelClass();
 		// default values
-		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : App.DefaultValues.fontSize;
+		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : App.Preferences.fontSize;
 		// object contruction
 		obj._pText = paper.text(paramX, paramY, paramStrText);
-		obj._pText.attr("font-size", App.DefaultValues.fontSize);
-		obj._pText.attr('font-family', App.DefaultValues.fontFamily);
-		obj._pText.attr('fill', App.DefaultValues.strokeColor);	
-		obj._pText.attr('font-size', App.DefaultValues.fontSize);
+		obj._pText.attr("font-size", App.Preferences.fontSize);
+		obj._pText.attr('font-family', App.Preferences.fontFamily);
+		obj._pText.attr('fill', App.Preferences.strokeColor);	
+		obj._pText.attr('font-size', App.Preferences.fontSize);
 		// return the new object
 		return obj;
 	},
@@ -120,7 +124,8 @@ var Label = {
 };
 
 function insert_state () {
-	State.build(paper, "q0");
+	State.build(paper, "q"+App.StateCount);
+	App.StateCount += 1;
 }
 
 $(document).ready(function() {
