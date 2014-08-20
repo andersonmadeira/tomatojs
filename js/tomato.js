@@ -23,6 +23,29 @@ var App = {
 	}
 }
 
+/**
+ * Enables states (including labels) to be draggable
+ */
+Raphael.st.draggable = function() {
+  var me = this,
+      lx = 0,
+      ly = 0,
+      ox = 0,
+      oy = 0,
+      moveFun = function(dx, dy) {
+          lx = dx + ox;
+          ly = dy + oy;
+          me.transform('t' + lx + ',' + ly);
+      },
+      startFun = function() {},
+      endFun = function() {
+          ox = lx;
+          oy = ly;
+      };
+  
+  this.drag(moveFun, startFun, endFun);
+};
+
 /**  
 * State Factory: responsible for building state objects
 */
@@ -40,6 +63,8 @@ var State = {
 		var x       = (typeof paramX      !== 'undefined')  ? paramX      : App.DefaultValues.xPos;
 		var y       = (typeof paramY      !== 'undefined')  ? paramY      : App.DefaultValues.yPos;
 		var radius  = (typeof paramRadius !== 'undefined')  ? paramRadius : App.DefaultValues.radius;
+		// starts set, ie Circle (State) + Text (Label)
+		paper.setStart();
 		// create the object
 		obj._pCircle = paper.circle(x, y, radius);
 		obj._pCircle.attr("stroke-width", App.DefaultValues.strokeWidth);
@@ -47,6 +72,12 @@ var State = {
 		obj._pCircle.attr("stroke", App.DefaultValues.strokeColor);
 		obj._label = Label.build(paramStrText, 
 			obj._pCircle.attr('cx'), obj._pCircle.attr('cy'));
+		// end set creation
+		obj._set = paper.setFinish();
+		// change cursor when hovering set
+		obj._set.attr({cursor: "move"});
+		// makes the set draggable
+		obj._set.draggable();
 		// return the new object
 		return obj;
 	},
