@@ -72,7 +72,7 @@ var Label = {
 		var fSize = (typeof paramFontSize !== 'undefined') ? paramFontSize : App.DefaultValues.fontSize;
 		// object contruction
 		obj._pText = paper.text(paramX, paramY, paramStrText);
-		obj._pText.attr("font-size", q0.label.fontSize);
+		obj._pText.attr("font-size", App.DefaultValues.fontSize);
 		obj._pText.attr('font-family', App.DefaultValues.fontFamily);
 		obj._pText.attr('fill', App.DefaultValues.strokeColor);	
 		obj._pText.attr('font-size', App.DefaultValues.fontSize);
