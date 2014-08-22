@@ -53,11 +53,11 @@ var App = {
  */
 Raphael.st.draggable = function() {
 	var me = this,
-		lx = 0,
+		lx = 0, // last X and Y
 		ly = 0,
-		ox = 0,
+		ox = 0, // origin
 		oy = 0,
-		sx = 0,
+		sx = 0, // start pos
 		sy = 0;
 	moveFun = function(dx, dy) {
 		if (App.Config.Mode == 1) {
@@ -65,15 +65,15 @@ Raphael.st.draggable = function() {
 			ly = dy + oy;
 			me.transform('t' + lx + ',' + ly);
 		} else if (App.Config.Mode == 2) {
-			paper.path('M '+sx+','+sy+' Q 100,40 '+lx+','+ly);
+			paper.path('M '+sx+','+sy+' Q 100,40 '+lx+','+ly).attr({stroke: "#000", "stroke-dasharray": "- "});
 		}
 	},
 	// note: also a single left mouse click
 	startFun = function(startX, startY) {
-		// start dragging brings the set to front
-		me.toFront();
 		// change opacity
 		me.animate({'fill-opacity': 0.5, 'stroke-opacity': 0.7}, 200);
+		// start dragging brings the set to front
+		me.toFront();
 		console.log('Start drag!');
 		if (App.Config.Mode == 2) {
 			sx = startX;
@@ -81,14 +81,14 @@ Raphael.st.draggable = function() {
 		}
 	},
 	endFun = function() {
+		me.animate({'fill-opacity': 1, 'stroke-opacity': 1}, 200);
+
 		if (App.Config.Mode == 1) {
 			ox = lx;
 			oy = ly;
 			console.log('End drag at: '+ox+','+oy);
 		} else if (App.Config.Mode == 2) {
-
 		}
-		me.animate({'fill-opacity': 1, 'stroke-opacity': 1}, 200);
 	};
   
 	this.drag(moveFun, startFun, endFun);
@@ -163,6 +163,41 @@ var Label = {
 	}
 };
 
+function make_transtition(ox, oy, tx, ty) {
+	var mx = (ox + tx) / 2,
+		my = (oy + ty) / 2,
+		path = ["M", ox, oy, "S", mx, my, tx, ty];
+		lines = ["M", mx, my, "L", ox, oy, "M", mx, my, "L", tx, ty];
+
+	_path_obj = paper.path(path)
+					  .attr({color: "#ffaa44", "stroke-width": 5});
+	_control_obj = paper.circle(mx, my, 5).attr({fill: "#444", stroke: "none"});
+
+	_lines_obj = paper.path(lines)
+					  .attr({color: "#ffaa44", "stroke-dasharray": "- ", "stroke-width": 1});
+
+	function start(sx, sy) {
+		this.ox = this.attr('cx');
+		this.oy = this.attr('cy');
+		this.attr({opacity: 0.5});
+	}
+	function move (dx, dy) {
+        this.attr({'cx': this.ox + dx, 'cy': this.oy + dy});
+        path[4] = this.ox + dx;
+        path[5] = this.oy + dy;
+        lines[1] = lines[7] = this.ox + dx;
+        lines[2] = lines[8] = this.oy + dy;
+        _path_obj.attr({path: path});
+        _lines_obj.attr({path: lines});
+	}
+	function end () {
+		this.attr({opacity: 1});
+	}
+
+	_control_obj.drag(move, start, end);
+
+}
+
 $(document).ready(function() {
 	// init main objs
 	paper = new Raphael('svg_canvas_container', 794, 394);
@@ -194,75 +229,8 @@ $(document).ready(function() {
 			insert_state(App.Config.Internal.InsertAt.x, App.Config.Internal.InsertAt.y);
 		}
 	});*/
-	function curve(x, y, ax, ay, bx, by, zx, zy, color) {
-        var path = [["M", x, y], ["C", ax, ay, bx, by, zx, zy]],
-            path2 = [["M", x, y], ["L", ax, ay], ["M", bx, by], ["L", zx, zy]],
-            curve = paper.path(path).attr({stroke: color || Raphael.getColor(), 
-            								"stroke-width": 10, 
-            								'arrow-end': 'block-midium-midium'}),
-            controls = paper.set(
-                paper.path(path2).attr({stroke: "#000", "stroke-dasharray": "- "}),
-                paper.circle(x, y, 5).attr({fill: "#444", stroke: "none"}),
-                paper.circle(ax, ay, 5).attr({fill: "#444", stroke: "none"}),
-                paper.circle(bx, by, 5).attr({fill: "#444", stroke: "none"}),
-                paper.circle(zx, zy, 5).attr({fill: "#444", stroke: "none"})
-            );
-        controls[1].update = function (x, y) {
-            var X = this.attr("cx") + x,
-                Y = this.attr("cy") + y;
-            this.attr({cx: X, cy: Y});
-            path[0][1] = X;
-            path[0][2] = Y;
-            path2[0][1] = X;
-            path2[0][2] = Y;
-            controls[2].update(x, y);
-        };
-        controls[2].update = function (x, y) {
-            var X = this.attr("cx") + x,
-                Y = this.attr("cy") + y;
-            this.attr({cx: X, cy: Y});
-            path[1][1] = X;
-            path[1][2] = Y;
-            path2[1][1] = X;
-            path2[1][2] = Y;
-            curve.attr({path: path});
-            controls[0].attr({path: path2});
-        };
-        controls[3].update = function (x, y) {
-            var X = this.attr("cx") + x,
-                Y = this.attr("cy") + y;
-            this.attr({cx: X, cy: Y});
-            path[1][3] = X;
-            path[1][4] = Y;
-            path2[2][1] = X;
-            path2[2][2] = Y;
-            curve.attr({path: path});
-            controls[0].attr({path: path2});
-        };
-        controls[4].update = function (x, y) {
-            var X = this.attr("cx") + x,
-                Y = this.attr("cy") + y;
-            this.attr({cx: X, cy: Y});
-            path[1][5] = X;
-            path[1][6] = Y;
-            path2[3][1] = X;
-            path2[3][2] = Y;
-            controls[3].update(x, y);
-        };
-        controls.drag(move, up);
-    }
-    function move(dx, dy) {
-        this.update(dx - (this.dx || 0), dy - (this.dy || 0));
-        this.dx = dx;
-        this.dy = dy;
-    }
-    function up() {
-        this.dx = this.dy = 0;
-    }
-    curve(70, 100, 110, 100, 130, 200, 170, 200, "hsb(0, .75, .75)");
-    curve(170, 100, 210, 100, 230, 200, 270, 200, "hsb(.8, .75, .75)");
-    curve(270, 100, 310, 100, 330, 200, 370, 200, "hsb(.3, .75, .75)");
-    curve(370, 100, 410, 100, 430, 200, 470, 200, "hsb(.6, .75, .75)");
-    curve(470, 100, 510, 100, 530, 200, 570, 200, "hsb(.1, .75, .75)");
+
+    make_transtition(100, 100, 300, 300);
+    
 });
 
