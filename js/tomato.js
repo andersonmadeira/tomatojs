@@ -164,8 +164,10 @@ var Label = {
 };
 
 function make_transtition(ox, oy, tx, ty) {
+	// setting middle point
 	var mx = (ox + tx) / 2,
 		my = (oy + ty) / 2,
+		// set paths
 		path = ["M", ox, oy, "S", mx, my, tx, ty];
 		lines = ["M", mx, my, "L", ox, oy, "M", mx, my, "L", tx, ty];
 
@@ -176,24 +178,34 @@ function make_transtition(ox, oy, tx, ty) {
 	_lines_obj = paper.path(lines)
 					  .attr({color: "#ffaa44", "stroke-dasharray": "- ", "stroke-width": 1});
 
+	// called when drag starts
 	function start(sx, sy) {
+		// set the origin of movement to the previous center point
 		this.ox = this.attr('cx');
 		this.oy = this.attr('cy');
 		this.attr({opacity: 0.5});
 	}
+
+	// called everytime position changes
 	function move (dx, dy) {
+		// center now moves to origin+distance
         this.attr({'cx': this.ox + dx, 'cy': this.oy + dy});
+        // the position of our control point has changed, thus register new position.
         path[4] = this.ox + dx;
         path[5] = this.oy + dy;
         lines[1] = lines[7] = this.ox + dx;
         lines[2] = lines[8] = this.oy + dy;
+        // apply changes to paths.
         _path_obj.attr({path: path});
         _lines_obj.attr({path: lines});
 	}
+
+	// called when the drag is over
 	function end () {
 		this.attr({opacity: 1});
 	}
 
+	// register the drag callbacks
 	_control_obj.drag(move, start, end);
 
 }
