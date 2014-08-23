@@ -40,8 +40,8 @@ var App = {
 		}
 	},
 	toggle_cp: function() {
-		App.Pref.displayControlPoints = !App.Pref.displayControlPoints;
-	}
+		App.Config.Pref.displayControlPoints = !App.Config.Pref.displayControlPoints;
+	},
 	trans_on: function() { 
 		// 2 => Handling states
 		if (App.Config.Mode != 2) {
@@ -161,10 +161,8 @@ function Transition(symbolStr, ox, oy, tx, ty) {
 	this.__path = ["M", ox, oy, "S", mx, my, tx, ty];
 	this.__lines = ["M", mx, my, "L", ox, oy, "M", mx, my, "L", tx, ty];
 
-	if (App.Pref.displayControlPoints) {
-		this._lines_obj = paper.path(this.__lines)
-					  .attr({color: "#ffaa44", "stroke-dasharray": "- ", "stroke-width": 1});
-	}
+	this._lines_obj = paper.path(this.__lines)
+				  .attr({color: "#ffaa44", "stroke-dasharray": "- ", "stroke-width": 1});
 
 	this._path_obj = paper.path(this.__path)
 					  .attr({color: "#ffaa44", "stroke-width": 5});
