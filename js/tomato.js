@@ -18,8 +18,8 @@ var App = {
 			strokeColor: "#1d7996",
 			fontFamily: "Arial",
 			fontSize: 25,
-			displayControlPoints: true
 		},
+		displayControlPoints: true,
 		Internal: {
 			InsertAt: {x: 0, y: 0}
 		},
@@ -40,7 +40,7 @@ var App = {
 		}
 	},
 	toggle_cp: function() {
-		App.Config.Pref.displayControlPoints = !App.Config.Pref.displayControlPoints;
+		App.Config.displayControlPoints = !App.Config.displayControlPoints;
 	},
 	trans_on: function() { 
 		// 2 => Handling states
@@ -89,11 +89,11 @@ function State(paramStrText, paramX, paramY, paramRadius) {
 	this.__ox = 0; // origin
 	this.__oy = 0;
 	
-	this._set.drag(this.__move(this), this.__start(this), this.__end(this));
+	this._set.drag(this.__onMove(this), this.__onStart(this), this.__onEnd(this));
 }
 
 // note: also a single left mouse click
-State.prototype.__start = function (obj) {
+State.prototype.__onStart = function (obj) {
 	return function(startX, startY) {
 		// change opacity
 		obj._set.animate({'fill-opacity': 0.5, 'stroke-opacity': 0.7}, 200);
@@ -103,7 +103,7 @@ State.prototype.__start = function (obj) {
 	}
 }
 
-State.prototype.__move = function (obj) {
+State.prototype.__onMove = function (obj) {
 	return function(dx, dy) {
 		// compute the shift
 		obj.__lx = dx + obj.__ox;
@@ -113,7 +113,7 @@ State.prototype.__move = function (obj) {
 	}
 }	
 
-State.prototype.__end = function(obj) {
+State.prototype.__onEnd = function(obj) {
 	return function () {
 		obj._set.animate({'fill-opacity': 1, 'stroke-opacity': 1}, 200);
 
@@ -177,13 +177,10 @@ function Transition(symbolStr, ox, oy, tx, ty) {
 
 	this._control_obj = paper.circle(mx, my, 5).attr({fill: "#444", stroke: "none"});
 
-	this._label_obj = paper.text(this._control_obj4.attr('cx'), this._control_obj4.attr('cy'), symbolStr)
-						   .attr({"font-size": App.Config.Pref.fontSize,
-								  'font-family': App.Config.Pref.fontFamily,
-								  'fill': App.Config.Pref.strokeColor});
+	this._label = new Label(symbolStr, this._control_obj4.attr('cx'), this._control_obj4.attr('cy'));
 
 	// register the drag callbacks
-	this._control_obj.drag(this.__move(this), this.__start(this), this.__end(this));
+	this._control_obj.drag(this.__onMove(this), this.__onStart(this), this.__onEnd(this));
 	this._control_obj.toFront();
 }
 
@@ -198,12 +195,12 @@ Transition.prototype.__update_controls = function() {
 							 'cy': (this.__path[5] + this.__path[7]) / 2});
 	this._control_obj4.attr({'cx': (this._control_obj2.attr('cx') + this._control_obj3.attr('cx')) / 2, 
 							 'cy': (this._control_obj2.attr('cy') + this._control_obj3.attr('cy')) / 2});
-	this._label_obj.attr({'x': (((this._control_obj4.attr('cx')+this.__path[4]) / 2) + (this._control_obj4.attr('cx'))) / 2, 
+	this._label._pText.attr({'x': (((this._control_obj4.attr('cx')+this.__path[4]) / 2) + (this._control_obj4.attr('cx'))) / 2, 
 						  'y': (((this._control_obj4.attr('cy')+this.__path[5]) / 2) + (this._control_obj4.attr('cy'))) / 2});
 };
 
 // called when drag starts
-Transition.prototype.__start = function(obj) {
+Transition.prototype.__onStart = function(obj) {
 	// closure that acts as the move func
 	return function(sx, sy) {
 		// set the origin of movement to the previous center point
@@ -214,7 +211,7 @@ Transition.prototype.__start = function(obj) {
 }
 
 // called everytime position changes
-Transition.prototype.__move = function(obj) {
+Transition.prototype.__onMove = function(obj) {
 	return function(dx, dy) {
 		// center now moves to origin+distance
 	    this.attr({'cx': this.sx + dx, 'cy': this.sy + dy});
@@ -231,7 +228,7 @@ Transition.prototype.__move = function(obj) {
 }
 
 // called when the drag is over
-Transition.prototype.__end = function(obj) {
+Transition.prototype.__onEnd = function(obj) {
 	return function () {
 		this.attr({opacity: 1});
 	}
