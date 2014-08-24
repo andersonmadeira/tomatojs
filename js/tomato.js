@@ -198,8 +198,8 @@ Transition.prototype.__update_controls = function() {
 							 'cy': (this.__path[5] + this.__path[7]) / 2});
 	this._control_obj4.attr({'cx': (this._control_obj2.attr('cx') + this._control_obj3.attr('cx')) / 2, 
 							 'cy': (this._control_obj2.attr('cy') + this._control_obj3.attr('cy')) / 2});
-	this._label_obj.attr({'x': (this._control_obj4.attr('cx')+this.__path[4]) / 2, 
-						  'y': (this._control_obj4.attr('cy')+this.__path[5]) / 2});
+	this._label_obj.attr({'x': (((this._control_obj4.attr('cx')+this.__path[4]) / 2) + (this._control_obj4.attr('cx'))) / 2, 
+						  'y': (((this._control_obj4.attr('cy')+this.__path[5]) / 2) + (this._control_obj4.attr('cy'))) / 2});
 };
 
 // called when drag starts
@@ -247,9 +247,9 @@ $(document).ready(function() {
 		}
 	});
 
-    t = new Transition('A', 10, 10, 300, 300);
+    t = new Transition('Anderson', 10, 10, 300, 300);
     t2 = new Transition('symbol', 200, 200, 300, 100);
-    t3 = new Transition('0', 102, 230, 30, 50);
+    t3 = new Transition('0101011', 102, 230, 30, 50);
     
 });
 
