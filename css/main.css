@@ -9,13 +9,8 @@ svg {
 }
 
 #svg_canvas_container {
-	padding: 3px;
-	background: #FAFAFA;
 	width: 800px;
 	height: 400px;
-}
-#stage {
-  border: 1px dashed gray;
 }
 
 .label {
