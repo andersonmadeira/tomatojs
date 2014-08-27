@@ -190,7 +190,9 @@ function Transition(symbolStr, ox, oy, tx, ty) {
 	this._control_obj.toFront();
 }
 
-// BEGIN - methods
+Transition.prototype.set_label_text = function(strLabeltext) {
+	this._label._pText.attr({'text': strLabeltext});
+};
 
 // update control point positions
 Transition.prototype.__update_controls = function() {
@@ -240,18 +242,83 @@ Transition.prototype.__onEnd = function(obj) {
 	}
 }
 
+// sets the target point (tx, ty)
+Transition.prototype.set_target = function(tx, ty) {
+	this.__path[6] = this.__lines[10] = tx;
+	this.__path[7] = this.__lines[11] = ty;
+	this.__path[4] = (tx + this.__path[1]) / 2;
+	this.__path[5] = (ty + this.__path[2]) / 2;
+	this.__lines[1] = this.__lines[7] = (tx + this.__path[1]) / 2;
+	this.__lines[2] = this.__lines[8] = (ty + this.__path[2]) / 2;
+	this._control_obj.attr({'cx': (tx + this.__path[1]) / 2, 
+							'cy': (ty + this.__path[2]) / 2});
+	this._path_obj.attr({path: this.__path});
+	this._lines_obj.attr({path: this.__lines});
+	this.__update_controls();
+};
+
+
+
 $(document).ready(function() {
 	// init main objs
 	App.Canvas.paper = new Raphael('svg_canvas_container', 800, 400);
-	// background rect
-	App.Canvas.bgRect = App.Canvas.paper.rect(0, 0, 800, 400).attr({'stroke': 'none', 'fill': '#FAFAFA'}).toBack();
+	var jQueryPaperCanvas = $(App.Canvas.paper.canvas);
+	var bgRect = App.Canvas.paper.rect(0, 0, jQueryPaperCanvas.width(), jQueryPaperCanvas.height())
+						 		 .attr({'stroke': 'none', 'fill': '#FAFAFA'})
+						 		 .toBack();
+	// paper offsets
+	var offsetLeft = jQueryPaperCanvas.offset().left;
+	var offsetTop = jQueryPaperCanvas.offset().top;
+	// check if using IE
+	var IE = document.all ? true : false;
+	// aux vars - positioning
+	var sx = 0, sy = 0, mx = 0, my = 0;
+	// last transition
+	var lastTransition = null;
+	// mouse move 
+	bgRect.mousemove(function (event) {
+        var x, y;
+
+        if (this.__IE) {
+            x = event.clientX + document.body.scrollLeft +
+                document.documentElement.scrollLeft;
+            y = event.clientY + document.body.scrollTop +
+                document.documentElement.scrollTop;
+        } else {
+            x = event.pageX;
+            y = event.pageY;
+        }
+        
+        // subtract paper coords on page
+        mx = x - offsetLeft;
+        my = y - offsetTop;
+        //console.log('[mousemove event] pos: '+mx+'.'+my);
+    });
+    // drag functions
+    var onStart = function (psx, psy) {
+		sx = psx - offsetLeft;
+		sy = psy - offsetTop;
+		console.log('Start drag at: '+sx+'.'+sy);
+		lastTransition = new Transition('', sx, sy, sx, sy);
+	};
+	var onMove = function (dx, dy) {
+		//console.log('Moved to: '+(dx+sx)+'.'+(dy+sy));
+		lastTransition.set_target(dx+sx, dy+sy);
+	};
+	var onEnd = function () {
+		console.log('Drag end: '+(mx)+'.'+(my));
+		strSymbol = prompt('Symbol: ');
+		lastTransition.set_label_text(strSymbol);
+	};
+	// assign callbacks
+	bgRect.drag(onMove, onStart, onEnd);
 	// resizes the div container and canvas
 	$('#svg_canvas_container').resizable({
 		resize: function( event, ui ) {
 			var w = $('#svg_canvas_container').width(),
 				h = $('#svg_canvas_container').height();
 			App.Canvas.paper.setSize(w, h);
-			App.Canvas.bgRect.attr({'width': w, 'height': h});
+			bgRect.attr({'width': w, 'height': h});
 		}
 	});
 
@@ -264,9 +331,8 @@ $(document).ready(function() {
 	});
 
     t = new Transition('Anderson', 10, 10, 300, 300);
-    t2 = new Transition('symbol', 200, 200, 300, 100);
-    t3 = new Transition('0101011', 102, 230, 30, 50);
-    t3 = new Transition('Foo', 200, 200, 600, 200);
-    
+
+    a = {x: 400, y: 400}; b = {x: 500, y: 500}; length = 15; width = 30;
+
 });
 
