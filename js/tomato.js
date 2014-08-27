@@ -302,6 +302,10 @@ $(document).ready(function() {
 		lastTransition = new Transition('', sx, sy, sx, sy);
 	};
 	var onMove = function (dx, dy) {
+<<<<<<< HEAD
+=======
+		//console.log('Moved to: '+(dx+sx)+'.'+(dy+sy));
+>>>>>>> d5f7c9999b65b4f859744330f4861c4b827705ed
 		lastTransition.set_target(dx+sx, dy+sy);
 	};
 	var onEnd = function () {
@@ -330,6 +334,5 @@ $(document).ready(function() {
 	});
 
     t = new Transition('Anderson', 10, 10, 300, 300);
-
 });
 
