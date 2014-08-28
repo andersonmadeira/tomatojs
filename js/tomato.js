@@ -3,7 +3,6 @@
  */
 var App = {
 	Config: {
-		Mode: 0,
 		Pref: {
 			xPos: 100,
 			yPos: 100,
@@ -21,29 +20,9 @@ var App = {
 		paper: null,
 		bgRect: null
 	},
-	insert_state: function() {
-		// if state mode is on
-		if (App.Config.Mode == 1) {
-			new State("q"+App.Config.StateCount);
-			App.Config.StateCount += 1;
-		}
-	},
-	state_on: function() {
-		// 1 => Handling states
-		if (App.Config.Mode != 1) {
-			console.log("States: ON");
-			App.Config.Mode = 1;
-		}
-	},
-	toggle_cp: function() {
-		App.Config.displayControlPoints = !App.Config.displayControlPoints;
-	},
-	trans_on: function() { 
-		// 2 => Handling states
-		if (App.Config.Mode != 2) {
-			console.log("Transition: ON");
-			App.Config.Mode = 2;
-		}
+	Input: {
+		Ctrl: false,
+		Shift: false
 	}
 }
 
@@ -88,6 +67,14 @@ function State(paramStrText, paramX, paramY, paramRadius) {
 	this._set.drag(this.__onMove(this), this.__onStart(this), this.__onEnd(this));
 	this._set.mouseup(this.__onMouseUp);
 	this._set.mousedown(this.__onMouseDown);
+
+	this._set.onDragOver(function (target_element) {
+		console.log('[+] Drag over '+target_element.id);
+	});
+
+	setTimeout(function (argument) {
+		// body...
+	})
 }
 
 State.prototype.__onMouseUp = function() {
@@ -294,6 +281,14 @@ $(document).ready(function() {
         my = y - offsetTop;
         //console.log('[mousemove event] pos: '+mx+'.'+my);
     });
+
+    // left mouse click event for adding states
+    bgRect.click(function(event) {
+    	if (App.Input.Ctrl == true) {
+    		new State("q"+App.Config.StateCount, mx, my);
+			App.Config.StateCount += 1;
+    	}
+    });
     // drag functions
     var onStart = function (psx, psy) {
 		sx = psx - offsetLeft;
@@ -310,7 +305,7 @@ $(document).ready(function() {
 		lastTransition.set_label_text(strSymbol);
 	};
 	// assign callbacks
-	bgRect.drag(onMove, onStart, onEnd);
+	// bgRect.drag(onMove, onStart, onEnd);
 	// resizes the div container and canvas
 	$('#svg_canvas_container').resizable({
 		resize: function( event, ui ) {
@@ -322,11 +317,19 @@ $(document).ready(function() {
 	});
 
 	$(document).keydown(function(event) {
-		console.log("Key down [code]: "+event.keyCode);
+		if (event.keyCode == 16) {
+			App.Input.Shift = true;
+		} else if (event.keyCode == 17) {
+			App.Input.Ctrl = true;
+		}
 	});
 
 	$(document).keyup(function(event) {
-		console.log("Key up [code]: "+event.keyCode);
+		if (event.keyCode == 16) {
+			App.Input.Shift = false;
+		} else if (event.keyCode == 17) {
+			App.Input.Ctrl = false;
+		}
 	});
 
     t = new Transition('Anderson', 10, 10, 300, 300);
